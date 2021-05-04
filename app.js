@@ -17,7 +17,7 @@ const timerID = setInterval(() => {
     .then((response) => {
       response.data.centers.map((center) => {
         center.sessions.map((session) => {
-          if (session.available_capacity >= 2) {
+          if (session.available_capacity >= 0) {
             records.push("Center: " + center.name);
             records.push("Date: " + session.date);
             records.push("Available Seats: " + session.available_capacity);
