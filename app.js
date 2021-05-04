@@ -5,11 +5,12 @@ const client = require("twilio")();
 const app = express();
 console.log("Server Started");
 
+const port = process.env.PORT || 8001;
+const token = process.env.TWILIO_ACCOUNT_SID;
 app.get("/", (req, res) => {
-  return res.status(200).send("Works");
+  return res.status(200).send(token);
 });
 
-const port = process.env.PORT || 8001;
 app.listen(port, () => {
   console.log(`listening on localhost port ${port}`);
 });
