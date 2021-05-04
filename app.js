@@ -1,7 +1,19 @@
 require("dotenv").config();
+const express = require("express");
 const axios = require("axios");
 const client = require("twilio")();
+const app = express();
 console.log("Server Started");
+
+app.get("/", (req, res) => {
+  return res.status(200).send("Works");
+});
+
+const port = process.env.PORT || 8001;
+app.listen(port, () => {
+  console.log(`listening on localhost port ${port}`);
+});
+
 const timerID = setInterval(() => {
   const district_id = 730;
   let date = new Date();
