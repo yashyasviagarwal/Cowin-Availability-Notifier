@@ -3,10 +3,13 @@ const express = require("express");
 const axios = require("axios");
 const client = require("twilio")();
 const app = express();
+const cors = require("cors");
 console.log("Server Started");
 
 const port = process.env.PORT || 8001;
 const token = process.env.TWILIO_ACCOUNT_SID;
+
+app.use(cors());
 app.get("/", (req, res) => {
   return res.status(200).send(token);
 });
