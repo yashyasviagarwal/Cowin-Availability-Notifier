@@ -35,7 +35,7 @@ const timerID = setInterval(() => {
     .then((response) => {
       response.data.centers.map((center) => {
         center.sessions.map((session) => {
-          if (session.available_capacity >= 0) {
+          if (session.available_capacity >= 2) {
             records.push("Center: " + center.name);
             records.push("Date: " + session.date);
             records.push("Available Seats: " + session.available_capacity);
@@ -65,4 +65,4 @@ const timerID = setInterval(() => {
       console.log(err);
       clearInterval(timerID);
     });
-}, 20 * 1000);
+}, 60 * 1000);
