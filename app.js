@@ -1,17 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
-const client = require("twilio")();
 const app = express();
 const cors = require("cors");
-console.log("Server Started");
 
 const port = process.env.PORT || 8001;
-const token = process.env.TWILIO_ACCOUNT_SID;
-
+const BOT_ID = process.env.BOT_ID;
+const CHANNEL_ID = process.env.CHANNEL_ID;
 app.use(cors());
 app.get("/", (req, res) => {
-  return res.status(200).send(token);
+  return res.status(200).send("Works");
 });
 
 app.listen(port, () => {
@@ -19,16 +17,20 @@ app.listen(port, () => {
 });
 
 const timerID = setInterval(() => {
-  const district_id = 730;
+  const district_id = 725;
   let date = new Date();
-  if (date < new Date(2021, 4, 26)) {
-    date = new Date(2021, 4, 26);
-  }
   date = date.toISOString().slice(0, 10).split("-").reverse().join("-");
   let records = [];
   axios
     .get(
-      `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${district_id}&date=${date}`
+      `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=${district_id}&date=${date}`,
+      {
+        headers: {
+          Host: "cdn-api.co-vin.in",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36",
+        },
+      }
     )
     .then((response) => {
       response.data.centers.map((center) => {
@@ -45,21 +47,15 @@ const timerID = setInterval(() => {
       if (records.length > 0) {
         records = records.join("\n");
         const messages = records.match(/(.|[\r\n]){1,1600}/g);
-        const numbers = ["+918335022832", "+918334825245"];
-        numbers.map((number) => {
-          messages.map((message) => {
-            client.messages
-              .create({
-                from: "whatsapp:+14155238886",
-                body: message,
-                to: `whatsapp:${number}`,
-              })
-              .then((message) => console.log("Message Sent: " + message.sid))
-              .catch((err) => {
-                console.log(err);
-                clearInterval(timerID);
-              });
-          });
+        messages.map((message) => {
+          axios
+            .get(
+              `https://api.telegram.org/bot${BOT_ID}/sendMessage?chat_id=${CHANNEL_ID}&text=${message}`
+            )
+            .then((response) => {
+              console.log("Message Sent");
+            })
+            .catch((err) => console.log(err));
         });
       } else {
         console.log("No Available Slots");
@@ -69,4 +65,4 @@ const timerID = setInterval(() => {
       console.log(err);
       clearInterval(timerID);
     });
-}, 60 * 1000);
+}, 20 * 1000);
